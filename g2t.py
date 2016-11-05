@@ -11,6 +11,7 @@ class NodePerson:
     families = []
 
     v_width = 1
+    visited = False
 
     def get_father(self):
         return self.father
@@ -61,18 +62,23 @@ class Gedcom2Tree:
             self.person_list[person_id] = NodePerson()
 
         for family_id in family_list:
-            self.family_list[family_id] = NodeFamily()
+            self.family_list[family_id] = family = NodeFamily()
 
-            self.family_list[family_id].father = self.person_list[ family_list[family_id]['father_id'] ]
-            self.family_list[family_id].mother = self.person_list[ family_list[family_id]['mother_id'] ]
+            family.father = self.person_list[ family_list[family_id]['father_id'] ]
+            family.mother = self.person_list[ family_list[family_id]['mother_id'] ]
             for children_id in family_list[family_id]['children_ids']:
                 self.family_list[family_id].children.append( self.person_list[children_id] )
+                self.person_list[children_id].parents = self.family_list[family_id]
 
             if family_list[family_id]['father_id'] != None:
-                self.person_list[ family_list[family_id]['father_id'] ].families.append( self.family_list[family_id] )
+                if family not in self.person_list[ family_list[family_id]['father_id'] ].families:
+                    self.person_list[ family_list[family_id]['father_id'] ].families.append( family )
+                    print 'F', family_list[family_id]['father_id'], family_id
             if family_list[family_id]['mother_id'] != None:
-                self.person_list[ family_list[family_id]['mother_id'] ].families.append( self.family_list[family_id] )
-
+                if family not in self.person_list[ family_list[family_id]['mother_id'] ].families:
+                    self.person_list[ family_list[family_id]['mother_id'] ].families.append( family )
+                    print 'M', family_list[family_id]['mother_id'], family_id
+                    
         self.build_tree()
 
 
@@ -89,6 +95,10 @@ class Gedcom2Tree:
 
 
     def _calc_tree(self, person):
+
+        if person.visited:
+            return
+        person.visited = True
 
         families = person.get_families()
 
@@ -130,6 +140,6 @@ class Gedcom2Tree:
 
         person = self.person_list[person_id]
         while person.parents != None and person.parents.father != None:
-            person = person.family.father
+            person = person.parents.father
 
         self._calc_tree(person)

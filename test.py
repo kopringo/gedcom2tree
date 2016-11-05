@@ -46,3 +46,12 @@ family_list = {
 g = Gedcom2Tree()
 g.load_raw_data(person_list, family_list)
 g.gen_tree(26)
+
+print ''
+for p in g.person_list:
+    print g.person_list[p]
+    print g.person_list[p].parents
+    print g.person_list[p].families
+    print ''
+print ''
+print g.family_list
