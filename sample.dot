@@ -1,0 +1,63 @@
+digraph G {
+f_i15_i31 [shape=point];
+i31[label=i31_Aga];
+        subgraph cluster_f_i15_i31 {
+                i15;
+                i31;
+                node [style=filled];
+                color=blue;
+                label = "process #2";
+        }
+        i15 -> f_15_31;
+        i31 -> f_15_31;
+        f_15_31 -> i16;
+        f_15_31 -> i3;
+        subgraph cluster_f_i16_i17 {
+                i16 -> f_i16_i17;
+                i17 -> f_i16_i17;
+                color=blue;
+        }
+        i3 -> f_i3_i2;
+        i2 -> f_i3_i2;
+        f_i3_i2 -> i8;
+        f_i3_i2 -> i9;
+        f_i3_i2 -> i10;
+        f_i3_i2 -> i11;
+        f_i3_i2 -> i12;
+        f_i3_i2 -> i13;
+        f_i3_i2 -> i14;
+        f_i3_i2 -> i1;
+        subgraph cluster_cluster_3 {
+                node [style=filled];
+                i1 -> f_i1_i4;
+                i4 -> f_i1_i4;
+                f_i1_i4 -> i5;
+                f_i1_i4 -> i6;
+                f_i1_i4 -> i7;
+
+                color=blue
+        }
+
+        subgraph cluster_f_i28_iph0__a {
+                i28 -> f_i28_iph0;
+                iph0 -> f_i28_iph0;
+                f_i28_iph0 -> i4;
+                color=blue
+        }
+
+subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		a0 -> a1 -> a2 -> a3;
+		label = "process #1";
+	}
+subgraph cluster_1 {
+		b0 -> b1 -> b2 -> b3;
+		label = "process #2";
+		color=blue
+	}
+i28 -> a00;
+a00 -> a0;
+a00 -> b0;
+}
