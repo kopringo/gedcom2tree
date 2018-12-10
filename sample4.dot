@@ -1,0 +1,45 @@
+digraph G {
+  packMode="graph";
+  ratio = "auto"
+  subgraph clusterA {
+    a -> z;
+    b -> z;
+  }
+
+    z -> y; z-> r; z->g;
+
+  subgraph clusterC {
+   y -> dupa;
+   o -> dupa;
+  }
+  subgraph clusterD {
+   r -> d2;
+   rr -> d2;
+  }
+  subgraph clusterE {
+   g -> oo;
+   gg -> oo;
+   g -> oo2;
+   gg2 -> oo2;
+   oo2 -> a2;
+  subgraph clusterEE {
+    oa -> p;oa -> plpl;oa->sdf;
+   }
+   oo -> oa;
+   g -> oo3;
+   gg3 -> oo3;
+   oo3 -> o1;
+   oo3 -> o2;
+   oo3 -> o3;
+  }
+  z -> asasas;
+  subgraph clusterEE2 {
+  o1 -> d3d3d [weight=-100];
+  }
+  subgraph clusterEE3 {
+  o2 -> d3d3d1 [weight=-100];
+  }
+subgraph clusterEE4 {
+  o3 -> d3d3d2 [weight=100, color=red, style=dotted];
+  }
+}

@@ -31,20 +31,15 @@ for element in families:
 # ...
 
 for family in families:
-    children = gedcom.get_family_members(family, 'CHIL')
+    
 
 
 
     print(u'\tsubgraph cluster_%s {' % family.get_pointer().replace('@', ''))
     print(u'\t\t_%s' % family.get_pointer().replace('@', ''))
-    parents = gedcom.get_family_members(family, 'PARENTS')
-    for parent in parents:
-        print(u'\t\t_%s' % parent.get_pointer().replace('@', ''))
+    
 
-    for child in children:
-        print(u'\t_%s -> _%s [weight=5];' % (family.get_pointer().replace('@', ''), child.get_pointer().replace('@', '')))
-        for family2 in gedcom.get_families(child):
-            print('\t\tcluster_%s;' % family2.get_pointer().replace('@', ''))
+    # ..
 
     print(u'\t}')
 
