@@ -1,4 +1,4 @@
-from gedcom import Gedcom, GEDCOM_TAG_HUSBAND
+from gedcom import Gedcom, GEDCOM_TAG_HUSBAND, GEDCOM_TAG_FAMILY_SPOUSE
 from copy import copy
 
 class GedcomFamilies:
@@ -212,10 +212,11 @@ label = "process %s";color=red;\n
         family_list_in_family = {}
 
         for person in family:
-            data += u'\t_%s [shape=box, label="%s"];\n' % (
-                person.get_pointer().replace('@', ''),
-                (' '.join(person.get_name())).replace('"', '^')
-            )
+            if len(self.__gedcom.get_families(person))>0:
+                data += u'\t_%s [shape=box, label="%s"];\n' % (
+                    person.get_pointer().replace('@', ''),
+                    (' '.join(person.get_name())).replace('"', '^')
+                )
             person_list_in_family[person.get_pointer()] = person
 
         for person in family:
@@ -231,15 +232,26 @@ label = "process %s";color=red;\n
 
                 data += u'\t\tsubgraph cluster_family_%s {\ncolor=blue;\n' % family.get_pointer().replace('@', '')
                 parents = self.__gedcom.get_family_members(family, 'PARENTS')
+                children = self.__gedcom.get_family_members(family, 'CHIL')
                 for parent in parents:
                     data += u'\t\t\t_%s -> _%s [weight=50];\n' % (parent.get_pointer().replace('@', ''), family.get_pointer().replace('@', ''))
+
+                    """
+                    for child in children:
+                        if len(self.__gedcom.get_families(child))==0:
+                            data += u'\t_%s [shape=box, label="%s"];\n' % (
+                                child.get_pointer().replace('@', ''),
+                                (' '.join(child.get_name())).replace('"', '^')
+                            )
+                    """
+
                 data += u'\t\t}\n'
 
-                children = self.__gedcom.get_family_members(family, 'CHIL')
                 for child in children:
-                    data += u'\t_%s -> _%s [weight=1];\n' % (family.get_pointer().replace('@', ''), child.get_pointer().replace('@', ''))
-                    #for family2 in gedcom.get_families(child):
-                    #    print('\t\tcluster_%s;' % family2.get_pointer().replace('@', ''))
+                    if len(self.__gedcom.get_families(child))>0:
+                        #print(self.__gedcom.get_families(child))
+                        data += u'\t_%s -> _%s [weight=1];\n' % (family.get_pointer().replace('@', ''), child.get_pointer().replace('@', ''))
+                    
 
 
         data += "}\n\n"
