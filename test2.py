@@ -15,9 +15,17 @@ try:
 except:
     pass
 
-gedcomFamilies = GedcomFamilies(ged_file_path)
+gedcomFamilies = GedcomFamilies(ged_file_path, 2)
 print(gedcomFamilies.get_dot_graph())
 
+"""
+families = gedcomFamilies.families
+families = sorted(families, key=lambda x: -len(x))
+for family in families:
+    print(family)
+    for person in family:
+        print(person.get_name())
+"""
 
 """
 gedcom = Gedcom(ged_file_path)
@@ -57,4 +65,4 @@ for last_name in last_names:
     print(u'\t}')
 """
 
-print('}')
+#print('}')

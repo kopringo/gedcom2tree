@@ -3,7 +3,8 @@ from copy import copy
 
 class GedcomFamilies:
 
-    families: dict = None
+    families: list = None
+    single_individuals: list = None
 
     # gedcom file and object
     __gedcom: Gedcom = None
@@ -14,7 +15,13 @@ class GedcomFamilies:
     __families: list = None
     __files: list = None
 
-    def __init__(self, gedcom_file_path):
+    def __init__(self, gedcom_file_path, subtree_type=1):
+        """
+        @param gedcom_file_path path to the gedcom file
+        @param subtree_type how to split tree into families:
+               1 - split tree using father's surname
+               2 - join related families into the same tree
+        """
 
         # load gedcom object
         self.__gedcom_file_path = gedcom_file_path
@@ -24,7 +31,10 @@ class GedcomFamilies:
         self.__load_gedcom_elements()
 
         # split the whole free into families
-        self.__generate_family_subtrees()
+        if subtree_type == 1:
+            self.__generate_family_subtrees()
+        if subtree_type == 2:
+            self.__generate_subtrees()
 
     def __load_gedcom_elements(self):
 
@@ -39,14 +49,57 @@ class GedcomFamilies:
             if element.is_file():
                 self.__files.append(element)
 
-    def __generate_family_subtrees(self):
+    def __generate_subtrees(self):
 
         self.families = []
-        single_individuals = []
+        self.single_individuals = []
 
         # set all persons as unvisited
         for individual in self.__individuals:
             individual.visited = False
+        
+        self.__set_all_individuals_as_unvisited()
+
+        # split them all
+        for individual in self.__individuals:
+
+            if individual.visited:
+                continue
+
+            new_family = []
+
+            queue = []
+            queue.append(individual)
+
+            while len(queue) > 0:
+
+                tmp_individual = queue.pop()
+                if tmp_individual.visited:
+                    continue
+                
+                tmp_individual.visited = True
+                new_family.append(tmp_individual)
+
+                tmp_families = self.__gedcom.get_families(tmp_individual, 'FAMC')
+                tmp_families = tmp_families + self.__gedcom.get_families(tmp_individual, 'FAMS')
+
+                for tmp_family in tmp_families:
+                    for tmp_child in self.__gedcom.get_family_members(tmp_family):
+                        queue.append(tmp_child)
+
+            if len(new_family) == 1:
+                self.single_individuals.append(new_family[0])
+            else:
+                self.families.append(copy(new_family))
+
+
+
+    def __generate_family_subtrees(self):
+
+        self.families = []
+        self.single_individuals = []
+
+        self.__set_all_individuals_as_unvisited()
 
         # split them all
         for individual in self.__individuals:
@@ -88,9 +141,8 @@ class GedcomFamilies:
                             tmp_indivdual_list.append(individual3)
 
             if len(new_family) == 1:
-                single_individuals.append(individual_pointer)
+                self.single_individuals.append(individual_pointer)
             else:
-
                 self.families.append(copy(new_family))
 
 
@@ -112,6 +164,11 @@ class GedcomFamilies:
         #print('')
         #print(self.families.keys())
 
+    def __set_all_individuals_as_unvisited(self):
+        # set all persons as unvisited
+        for individual in self.__individuals:
+            individual.visited = False
+
     def get_dot_graph(self):
         data = ''
         data += GedcomFamilies.__get_dot_graph_header()
@@ -125,8 +182,8 @@ class GedcomFamilies:
             #if family_key == 'koperkiewicz':
             family_key = str(i)
             i = i + 1
-            if i == 3:
-                data += self.__get_subgraph_for_family(family, family_key)
+            #if i == 3:
+            data += self.__get_subgraph_for_family(family, family_key)
 
         data += GedcomFamilies.__get_dot_graph_footer()
 
